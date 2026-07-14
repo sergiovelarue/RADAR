@@ -535,18 +535,42 @@ validateDailyFiles = async function(){
 
 // ===============================
 // V8.4 - Login, perfiles y log de acceso
+// V9.2 - Acceso abierto por asesor (rebrand ConAccion)
 // ===============================
-const AUTH_USERS_V84 = {
-  "sergio.velasquez@comodisimos.com": { profile: "admin", advisor: "ADMINISTRADOR", name: "SERGIO VELÁSQUEZ" },
-  "sergiovelasquez@me.com": { profile: "admin", advisor: "ADMINISTRADOR", name: "SERGIO VELÁSQUEZ" },
-  "algiraldo@comodisimos.com": { profile: "advisor", advisor: "ALBEIRO GIRALDO", name: "ALBEIRO GIRALDO" },
-  "cristian.londono@comodisimos.com": { profile: "advisor", advisor: "CRISTIAN LONDOÑO", name: "CRISTIAN LONDOÑO" },
-  "hemunoz@comodisimos.com": { profile: "advisor", advisor: "HERCILIA MUÑOZ", name: "HERCILIA MUÑOZ" },
-  "yurley.villamizar@comodisimos.com": { profile: "advisor", advisor: "KATHERIN VILLAMIZAR", name: "KATHERIN VILLAMIZAR" },
-  "natalia.garcia@comodisimos.com": { profile: "advisor", advisor: "NATALIA GARCIA", name: "NATALIA GARCIA" },
-  "rualfonso@comodisimos.com": { profile: "advisor", advisor: "RUBEN ALFONSO", name: "RUBEN ALFONSO" },
-  "yesica.munoz@comodisimos.com": { profile: "advisor", advisor: "YESICA MUÑOZ", name: "YESICA MUÑOZ" }
-};
+const ADMIN_EMAIL_V92 = "sergiovelasquez@me.com";
+const BLOCKED_DOMAIN_V92 = "@comodisimos.com";
+
+function advisorEmailMapV92Get(){
+  try { return JSON.parse(localStorage.getItem("radarAdvisorEmailMapV92") || "{}"); }
+  catch(e){ return {}; }
+}
+function advisorEmailMapV92Save(map){
+  localStorage.setItem("radarAdvisorEmailMapV92", JSON.stringify(map));
+}
+function isBlockedDomainV92(email){
+  return String(email || "").trim().toLowerCase().endsWith(BLOCKED_DOMAIN_V92);
+}
+// Resuelve el usuario a partir del correo.
+// - Bloquea el dominio @comodisimos.com.
+// - sergiovelasquez@me.com es el único administrador.
+// - Cualquier otro correo se asocia a un asesor elegido en su primer ingreso
+//   (queda guardado localmente para los siguientes ingresos desde ese correo).
+function resolveUserV92(email, chosenAdvisor){
+  email = String(email || "").trim().toLowerCase();
+  if(isBlockedDomainV92(email)) return { blocked: true };
+  if(email === ADMIN_EMAIL_V92){
+    return { user: { profile: "admin", advisor: "ADMINISTRADOR", name: "SERGIO VELÁSQUEZ" } };
+  }
+  const map = advisorEmailMapV92Get();
+  let advisor = map[email];
+  if(!advisor && chosenAdvisor){
+    advisor = chosenAdvisor;
+    map[email] = advisor;
+    advisorEmailMapV92Save(map);
+  }
+  if(!advisor) return { needsAdvisor: true };
+  return { user: { profile: "advisor", advisor, name: advisor } };
+}
 
 let currentUserV84 = null;
 
@@ -637,6 +661,7 @@ function attemptLoginV84(){
   const phone = String($("loginPhone").value || "").trim();
   const remember = $("rememberSession").checked;
   const error = $("loginError");
+  error.textContent = "";
 
   if(!validEmailV84(email)){
     error.textContent = "Ingresa un correo válido.";
@@ -648,13 +673,20 @@ function attemptLoginV84(){
     return;
   }
 
-  const user = AUTH_USERS_V84[email];
-  if(!user){
-    error.textContent = "Correo no autorizado para ingresar a Radar.";
+  const advisorSelect = $("loginAdvisorSelect");
+  const chosenAdvisor = advisorSelect ? advisorSelect.value : "";
+  const resolved = resolveUserV92(email, chosenAdvisor);
+
+  if(resolved.blocked){
+    error.textContent = "Este dominio de correo ya no está autorizado para ingresar a Radar.";
+    return;
+  }
+  if(resolved.needsAdvisor){
+    error.textContent = "Primer ingreso: selecciona a qué asesor corresponde este correo.";
     return;
   }
 
-  const fullUser = { ...user, email };
+  const fullUser = { ...resolved.user, email };
   setSessionV84(fullUser, phone, remember);
   logAccessV84(fullUser, phone);
   applyUserProfileV84();
@@ -777,6 +809,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = $("loginBtn");
   if(loginBtn) loginBtn.addEventListener("click", attemptLoginV84);
 
+  const advisorSelect = $("loginAdvisorSelect");
+  if(advisorSelect){
+    advisorSelect.innerHTML = '<option value="">Selecciona tu asesor (solo primer ingreso)</option>' +
+      (DATA.meta.asesores || []).map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join("");
+  }
+
   ["loginEmail","loginPhone"].forEach(id => {
     const el = $(id);
     if(el){
@@ -787,11 +825,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const saved = getSessionV84();
-  if(saved && saved.email && AUTH_USERS_V84[saved.email]){
+  const savedOk = saved && saved.email && !isBlockedDomainV92(saved.email) &&
+    (saved.email === ADMIN_EMAIL_V92 || (saved.advisor && (DATA.meta.asesores || []).includes(saved.advisor)));
+  if(savedOk){
     currentUserV84 = saved;
     applyUserProfileV84();
     renderUsageDashboardV84();
     render();
+  } else if(saved){
+    clearSessionV84();
   }
 
   const logoutBtn = $("logoutBtn");

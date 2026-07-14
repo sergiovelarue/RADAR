@@ -164,6 +164,40 @@
   text-align: center;
 }
 
+.login-form select#loginAdvisorSelect {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 15px;
+  background: white;
+}
+
+.login-form .field-help {
+  display: block;
+  color: #9ca3af;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.app-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px 26px;
+  color: #9ca3af;
+  font-size: 12px;
+  text-align: center;
+}
+
+.footer-mark {
+  opacity: 0.035;
+  font-size: 9px;
+  user-select: none;
+  pointer-events: none;
+}
+
 .usage-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));

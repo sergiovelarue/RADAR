@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Radar Comercial B2B V9.1</title>
+  <title>Radar Comercial B2B · ConAccion</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
@@ -14,16 +15,20 @@
         <div class="login-icon">R</div>
         <div>
           <h1>Radar Comercial B2B</h1>
-          <p>Acceso seguro para equipo comercial</p>
+          <p>Acceso seguro para equipo comercial ConAccion</p>
         </div>
       </div>
 
       <div class="login-form">
         <label>Correo autorizado</label>
-        <input type="email" id="loginEmail" placeholder="correo@comodisimos.com" autocomplete="email"/>
+        <input type="email" id="loginEmail" placeholder="tucorreo@ejemplo.com" autocomplete="email"/>
 
         <label>Teléfono celular</label>
         <input type="tel" id="loginPhone" placeholder="3001234567" autocomplete="tel"/>
+
+        <label>Asesor</label>
+        <select id="loginAdvisorSelect"></select>
+        <small class="field-help">Solo la primera vez que ingresas con este correo. Si ya ingresaste antes, puedes dejarlo en blanco.</small>
 
         <label class="remember-row">
           <input type="checkbox" id="rememberSession" checked/>
@@ -42,7 +47,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon">R</div>
-        <div><h1>Radar Comercial B2B</h1><small>V9.1 · Segmentos comerciales</small></div>
+        <div><h1>Radar Comercial B2B</h1><small>ConAccion · V9.2 · Segmentos comerciales</small></div>
       </div>
       <nav><a class="active" id="navRoute">Hoja de ruta</a><a id="navUpdate">Actualización diaria</a><a id="navDashboard">Dashboard director</a><a id="navGlossary">Glosario comercial</a></nav>
     </aside>
@@ -397,6 +402,11 @@
     </main>
   </div>
 
+  <footer class="app-footer">
+    <span>© <span id="footerYear"></span> Todos los derechos reservados. Sergio Velásquez.</span>
+    <span class="footer-mark" aria-hidden="true">23:1</span>
+  </footer>
+
   <div class="modal-overlay" id="clientModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -512,5 +522,9 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script>
+    var fy = document.getElementById("footerYear");
+    if (fy) fy.textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

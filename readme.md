@@ -193,6 +193,18 @@ Para sincronización real entre administrador y asesores se requiere una base co
 - Glosario ampliado con Meta S&OP, Gap S&OP, portafolio gestionable y ventana móvil.
 
 
+## V9.2 - Rebrand ConAccion y acceso abierto por asesor
+
+- Marca visible pasa de Comodísimos a ConAccion (login y sidebar).
+- Favicon agregado (placeholder "R" azul; pendiente reemplazo por el ícono real del Calculador).
+- Footer con "Todos los derechos reservados. Sergio Velásquez." y marca discreta "23:1".
+- Control de acceso reescrito:
+  - Único administrador: sergiovelasquez@me.com.
+  - Dominio @comodisimos.com bloqueado explícitamente.
+  - Cualquier otro correo puede ingresar; en su primer ingreso selecciona a qué asesor corresponde (selector en el login) y esa asociación queda guardada localmente para próximos ingresos desde ese correo.
+  - Se elimina la lista fija AUTH_USERS_V84 de correos por asesor.
+
+
 ## V9.1 - Segmentos Comerciales
 
 Se incorpora una nueva dimensión de análisis en Dashboard Director:
