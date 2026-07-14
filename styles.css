@@ -191,11 +191,17 @@
   text-align: center;
 }
 
-.footer-mark {
-  opacity: 0.035;
-  font-size: 9px;
+.subliminal-mark {
+  position: fixed;
+  bottom: 10px;
+  right: 14px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  opacity: 0.12;
   user-select: none;
   pointer-events: none;
+  z-index: 3000;
 }
 
 .usage-grid {
